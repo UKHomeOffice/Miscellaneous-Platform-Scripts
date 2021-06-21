@@ -95,6 +95,8 @@ gen_count=0
 pcdp_count=0
 es_count=0
 ss_count=0
+prau_count=0
+tram_count=0
 
 # variables for priority incident tickets
 pcdp_P1=0
@@ -112,6 +114,12 @@ gen_P3P4=0
 ss_P1=0
 ss_P2=0
 ss_P3P4=0
+prau_P1=0
+prau_P2=0
+prau_P3P4=0
+tram_P1=0
+tram_P2=0
+tram_P3P4=0
 
 while IFS=$"\n" read -r key; do
 
@@ -120,8 +128,6 @@ while IFS=$"\n" read -r key; do
 	priority=$( echo "${key}" | jq -r '.fields .customfield_12405 .value' )
 	#createdEpoch=$( echo "${key}" | jq -r '.fields .customfield_11302 .currentStatus .statusDate .epochMillis' )
   type=$( echo "${key}" | jq -r '.fields .issuetype .name' )
-
-  service=""
 
 	#if [[ -z ${createdEpoch} ]]; then
 	#  created=""
@@ -143,10 +149,39 @@ while IFS=$"\n" read -r key; do
     else
       pcdp_count=$(( ${pcdp_count} + 1 ))
     fi
-  # DB Support
-  elif [[ $( echo ${summary} | grep -iE 'GP1|GP2|postgres|cpau|prau|Greenplum|redshift|schema|CRS|database' ) ]]; then
 
-    service="Database"
+  # PRAU
+  elif [[ $( echo ${summary} | grep -iE 'prau' ) ]]; then
+
+    service="PRAU"
+    if [[ "${type}" == "Incident" && "${priority}" == "P1"  ]]; then
+      prau_P1=$(( ${prau_P1} + 1 ))
+    elif [[ "${type}" == "Incident" && "${priority}" == "P2"  ]]; then
+      prau_P2=$(( ${prau_P2} + 1 ))
+    elif [[ "${type}" == "Incident" ]]; then
+      prau_P3P4=$(( ${prau_P3P4} + 1 ))
+    else
+      prau_count=$(( ${prau_count} + 1 ))
+    fi
+
+    # TRaM
+  elif [[ $( echo ${summary} | grep -iE 'tram' ) ]]; then
+
+    service="TRaM"
+    if [[ "${type}" == "Incident" && "${priority}" == "P1"  ]]; then
+      tram_P1=$(( ${tram_P1} + 1 ))
+    elif [[ "${type}" == "Incident" && "${priority}" == "P2"  ]]; then
+      tram_P2=$(( ${tram_P2} + 1 ))
+    elif [[ "${type}" == "Incident" ]]; then
+      tram_P3P4=$(( ${tram_P3P4} + 1 ))
+    else
+      tram_count=$(( ${tram_count} + 1 ))
+    fi
+
+  # DB Support
+  elif [[ $( echo ${summary} | grep -iE 'GP1|GP2|postgres|cpau|Greenplum|redshift|schema|CRS|database' ) ]]; then
+
+    service="Databases"
     if [[ "${type}" == "Incident" && "${priority}" == "P1"  ]]; then
       db_P1=$(( ${db_P1} + 1 ))
     elif [[ "${type}" == "Incident" && "${priority}" == "P2"  ]]; then
@@ -222,6 +257,8 @@ echo "Database Support,${db_P1}, ${db_P2}, ${db_P3P4}, ${db_count}" >> ${filenam
 echo "PCDP Support,${pcdp_P1}, ${pcdp_P2}, ${pcdp_P3P4}, ${pcdp_count}" >> ${filename}
 echo "EntitySearch Support,${es_P1}, ${es_P2}, ${es_P3P4}, ${es_count}" >> ${filename}
 echo "Shared Services Support,${ss_P1}, ${ss_P2}, ${ss_P3P4}, ${ss_count}" >> ${filename}
+echo "PRAU Support,${prau_P1}, ${prau_P2}, ${prau_P3P4}, ${prau_count}" >> ${filename}
+echo "TRaM Support,${tram_P1}, ${tram_P2}, ${tram_P3P4}, ${tram_count}" >> ${filename}
 
 
 exit 0
