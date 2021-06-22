@@ -4,7 +4,9 @@
 # incidents and service requests tickets
 # assogned to the Platform Team
 
-# Prerequisite: install jq
+# Prerequisite:
+# - install jq
+# - connect to the vpn-acp-tunnel
 
 display_help() {
     echo "Usage: $0 [option...] "
