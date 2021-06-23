@@ -89,6 +89,9 @@ fi
 
 echo "Jira Platform Reports from the ${FROM} to ${TO}"
 
+touch ${filename}
+chmod 777 ${filename}
+
 echo "Ticket Number, Summary, Type, Priority, Service" > ${filename}
 
 # variables for amount of tickets per service
@@ -251,6 +254,7 @@ done <<< "$( curl \
    --data '{"jql":"project = PS AND created >= '${FROM}' AND created <= '${TO}' AND assignee in (Platform, membersof(platform)) ORDER BY createdDate ASC","startAt":0,"maxResults":500}' \
    "https://jira.dsa.homeoffice.gov.uk/rest/api/2/search" | jq -c '.issues[]' )"
 
+# Creating report
 echo "" >> ${filename}
 echo "" >> ${filename}
 echo ",P1 Incidents, P2 Incidents, P3/P4 Incidents, Service Requests" >> ${filename}
