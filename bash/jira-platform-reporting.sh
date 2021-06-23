@@ -7,6 +7,7 @@
 # Prerequisite:
 # - install jq
 # - connect to the vpn-acp-tunnel
+# - user to be added to the jira-servicedesk-user group in jira
 
 display_help() {
     echo "Usage: $0 [option...] "
